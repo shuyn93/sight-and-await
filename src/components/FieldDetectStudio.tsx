@@ -104,14 +104,77 @@ export const FieldDetectStudio = () => {
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[800px]">
-          {/* Results Panel - Left Side */}
-          <Card className="p-6 bg-card border-border shadow-card">
-            <ResultsPanel isProcessing={isProcessing} results={results} />
-          </Card>
+        {/* Main Content Grid - Hai khung bên cạnh nhau */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Side - Kết quả và chỉ số */}
+          <div className="space-y-6">
+            {/* Khung hiển thị ảnh/video sau khi dự đoán */}
+            <Card className="p-6 bg-card border-border shadow-card">
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-foreground">Kết quả dự đoán</h2>
+                <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
+                  {results.length > 0 ? (
+                    <div className="text-center">
+                      <div className="text-ai-primary text-lg font-medium">Đã phát hiện {results.length} đối tượng</div>
+                      <div className="text-sm text-muted-foreground mt-2">Ảnh/video đã được xử lý</div>
+                    </div>
+                  ) : (
+                    <div className="text-center text-muted-foreground">
+                      <Camera className="h-12 w-12 mx-auto mb-2" />
+                      <div>Chờ kết quả dự đoán...</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
 
-          {/* Video Player - Right Side */}
+            {/* Khung chỉ số kết quả */}
+            <Card className="p-6 bg-card border-border shadow-card">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground">Thống kê kết quả</h3>
+                
+                {results.length > 0 ? (
+                  <div className="space-y-4">
+                    {/* Tổng số đối tượng */}
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                      <span className="text-foreground">Tổng số đối tượng:</span>
+                      <span className="text-ai-primary font-bold text-xl">{results.length}</span>
+                    </div>
+
+                    {/* Độ tin cậy trung bình */}
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                      <span className="text-foreground">Độ tin cậy trung bình:</span>
+                      <span className="text-ai-secondary font-bold text-xl">
+                        {Math.round(results.reduce((acc, r) => acc + r.confidence, 0) / results.length * 100)}%
+                      </span>
+                    </div>
+
+                    {/* Phân loại theo đối tượng */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-foreground">Phân loại theo đối tượng:</h4>
+                      {Object.entries(
+                        results.reduce((acc, result) => {
+                          acc[result.label] = (acc[result.label] || 0) + 1;
+                          return acc;
+                        }, {} as Record<string, number>)
+                      ).map(([label, count]) => (
+                        <div key={label} className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                          <span className="text-sm text-foreground">{label}:</span>
+                          <Badge variant="secondary">{count}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-muted-foreground py-8">
+                    <div className="text-sm">Chưa có kết quả dự đoán</div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          {/* Right Side - Video trong lúc đợi */}
           <Card className="p-6 bg-card border-border shadow-card">
             <VideoPlayer isWaiting={isProcessing} />
           </Card>
