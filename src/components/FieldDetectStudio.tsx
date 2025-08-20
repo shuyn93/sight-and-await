@@ -1,65 +1,92 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Camera, Cpu, Sparkles } from "lucide-react";
-import { ResultsPanel } from "./ResultsPanel";
-import { VideoPlayer } from "./VideoPlayer";
+import { Upload, Play, Cpu, Sparkles, Camera, Download } from "lucide-react";
+import axios from "axios";
+import { VideoPlayer } from "./VideoPlayer"; // chỉnh path nếu khác
 
 interface DetectionResult {
-  id: string;
   label: string;
   confidence: number;
   bbox: { x: number; y: number; width: number; height: number };
+  color: number[];
+}
+
+interface Keypoint {
+  x: number;
+  y: number;
+  index: number;
 }
 
 export const FieldDetectStudio = () => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [results, setResults] = useState<DetectionResult[]>([]);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  // Simulate AI processing
-  const handleProcessImage = () => {
+  const handleUploadImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const validImageTypes = ["image/jpeg", "image/png", "image/bmp", "image/gif"];
+      const validVideoTypes = ["video/mp4", "video/mov"];
+      if (!validImageTypes.includes(file.type) && !validVideoTypes.includes(file.type)) {
+        alert("Vui lòng tải ảnh (JPG, PNG, BMP, GIF) hoặc video (MP4, MOV)!");
+        return;
+      }
+      const imageUrl = URL.createObjectURL(file);
+      setUploadedImage(imageUrl);
+      setStats(null);
+      setDownloadUrl(null);
+    }
+  };
+
+  const handleProcessImage = async () => {
+    if (!uploadedImage) return;
     setIsProcessing(true);
-    setResults([]);
+    setStats(null);
+    setDownloadUrl(null);
 
-    // Simulate processing time
-    setTimeout(() => {
-      const mockResults: DetectionResult[] = [
-        {
-          id: "1",
-          label: "Crop Field",
-          confidence: 0.95,
-          bbox: { x: 10, y: 15, width: 200, height: 150 }
-        },
-        {
-          id: "2", 
-          label: "Irrigation System",
-          confidence: 0.87,
-          bbox: { x: 250, y: 80, width: 120, height: 90 }
-        },
-        {
-          id: "3",
-          label: "Farm Equipment",
-          confidence: 0.92,
-          bbox: { x: 400, y: 120, width: 180, height: 100 }
-        },
-        {
-          id: "4",
-          label: "Livestock Area",
-          confidence: 0.78,
-          bbox: { x: 50, y: 300, width: 150, height: 120 }
-        }
-      ];
+    const fileInput = document.getElementById("imageUpload") as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (!file) return;
 
-      setResults(mockResults);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post("http://localhost:8000/process", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const { download_url, processing_time, counts, confidence_avg } = response.data;
+
+      // Lưu stats và link tải xuống
+      setStats({ counts, confidence_avg, processing_time });
+      setDownloadUrl(download_url);
+
+      // Dùng luôn ảnh xử lý từ backend hiển thị
+      const resultBlob = await fetch(`http://localhost:8000${download_url}`).then(res => res.blob());
+      const imageUrl = URL.createObjectURL(resultBlob);
+      setUploadedImage(imageUrl);
+
+    } catch (error) {
+      console.error("Lỗi khi xử lý file:", error);
+      alert("Có lỗi xảy ra khi xử lý file!");
+    } finally {
       setIsProcessing(false);
-    }, 3000);
+    }
+  };
+
+  const handleDownloadImage = () => {
+    if (downloadUrl) {
+      window.open(`http://localhost:8000${downloadUrl}`, "_blank");
+    }
   };
 
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-3">
             <div className="p-3 rounded-xl bg-gradient-ai shadow-glow">
@@ -67,102 +94,125 @@ export const FieldDetectStudio = () => {
             </div>
             <div>
               <h1 className="text-4xl font-bold bg-gradient-ai bg-clip-text text-transparent">
-                Field Detect Studio
+                AI Sports Vision
               </h1>
-              <p className="text-muted-foreground">AI-powered agricultural field analysis</p>
+              <p className="text-muted-foreground">
+                Hệ thống nhận diện thông minh: sân bóng, bóng và cầu thủ
+              </p>
             </div>
           </div>
 
-          {/* Action Bar */}
           <div className="flex items-center justify-center space-x-4">
             <Button
+              className="bg-ai-primary hover:bg-ai-primary/90 text-white shadow-glow"
+              onClick={() => document.getElementById("imageUpload")?.click()}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Tải file lên
+            </Button>
+            <input
+              id="imageUpload"
+              type="file"
+              accept="image/jpeg,image/png,image/bmp,image/gif,video/mp4,video/mov"
+              className="hidden"
+              onChange={handleUploadImage}
+            />
+
+            <Button
               onClick={handleProcessImage}
-              disabled={isProcessing}
+              disabled={isProcessing || !uploadedImage}
               className="bg-ai-primary hover:bg-ai-primary/90 text-white shadow-glow"
             >
               {isProcessing ? (
                 <>
                   <Sparkles className="h-4 w-4 mr-2 animate-spin" />
-                  Processing...
+                  Đang xử lý...
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Start Detection
+                  <Play className="h-4 w-4 mr-2" />
+                  Bắt đầu
                 </>
               )}
             </Button>
-            
-            <Button variant="outline" className="border-border">
-              <Camera className="h-4 w-4 mr-2" />
-              Camera Input
+
+            <Button
+              onClick={handleDownloadImage}
+              disabled={!downloadUrl}
+              className="bg-ai-primary hover:bg-ai-primary/90 text-white shadow-glow"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Tải xuống
             </Button>
 
-            <Badge variant="secondary" className="px-4 py-2">
-              Model: YOLOv8-Agriculture
+            <Badge variant="secondary" className="px-4 py-2 bg-ai-primary hover:bg-ai-primary/90 text-white shadow-glow">
+              Mô hình: YOLOv8-Architecture
             </Badge>
           </div>
         </div>
 
-        {/* Main Content Grid - Hai khung bên cạnh nhau */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Side - Kết quả và chỉ số */}
           <div className="space-y-6">
-            {/* Khung hiển thị ảnh/video sau khi dự đoán */}
             <Card className="p-6 bg-card border-border shadow-card">
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">Kết quả dự đoán</h2>
-                <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
-                  {results.length > 0 ? (
-                    <div className="text-center">
-                      <div className="text-ai-primary text-lg font-medium">Đã phát hiện {results.length} đối tượng</div>
-                      <div className="text-sm text-muted-foreground mt-2">Ảnh/video đã được xử lý</div>
-                    </div>
+                <h2 className="text-xl font-semibold text-foreground">
+                  Kết quả dự đoán
+                </h2>
+                <div className="w-full max-h-[400px] bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                  {uploadedImage ? (
+                    <img
+                      src={uploadedImage}
+                      alt="Result"
+                      className="w-full h-auto object-contain"
+                    />
                   ) : (
                     <div className="text-center text-muted-foreground">
                       <Camera className="h-12 w-12 mx-auto mb-2" />
-                      <div>Chờ kết quả dự đoán...</div>
+                      <div>Chưa có file nào, hãy tải file lên</div>
                     </div>
                   )}
                 </div>
               </div>
             </Card>
 
-            {/* Khung chỉ số kết quả */}
             <Card className="p-6 bg-card border-border shadow-card">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-foreground">Thống kê kết quả</h3>
-                
-                {results.length > 0 ? (
+                <h3 className="text-lg font-semibold text-foreground">
+                  Thống kê kết quả
+                </h3>
+                {stats ? (
                   <div className="space-y-4">
-                    {/* Tổng số đối tượng */}
                     <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                       <span className="text-foreground">Tổng số đối tượng:</span>
-                      <span className="text-ai-primary font-bold text-xl">{results.length}</span>
+                      <span className="text-ai-primary font-bold text-xl">
+                        {Object.values(stats.counts).reduce((a: any, b: any) => a + b, 0)}
+                      </span>
                     </div>
-
-                    {/* Độ tin cậy trung bình */}
                     <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                       <span className="text-foreground">Độ tin cậy trung bình:</span>
                       <span className="text-ai-secondary font-bold text-xl">
-                        {Math.round(results.reduce((acc, r) => acc + r.confidence, 0) / results.length * 100)}%
+                        {(stats.confidence_avg * 100).toFixed(2)}%
                       </span>
                     </div>
-
-                    {/* Phân loại theo đối tượng */}
                     <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-foreground">Phân loại theo đối tượng:</h4>
-                      {Object.entries(
-                        results.reduce((acc, result) => {
-                          acc[result.label] = (acc[result.label] || 0) + 1;
-                          return acc;
-                        }, {} as Record<string, number>)
-                      ).map(([label, count]) => (
-                        <div key={label} className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                      <h4 className="text-sm font-medium text-foreground">
+                        Phân loại theo đối tượng:
+                      </h4>
+                      {Object.entries(stats.counts).map(([label, count]) => (
+                        <div
+                          key={label}
+                          className="flex justify-between items-center p-2 bg-muted/50 rounded"
+                        >
                           <span className="text-sm text-foreground">{label}:</span>
-                          <Badge variant="secondary">{count}</Badge>
+                          <Badge variant="secondary">{count as number}</Badge>
                         </div>
                       ))}
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                      <span className="text-foreground">Thời gian xử lý (ms):</span>
+                      <span className="text-ai-secondary font-bold text-xl">
+                        {stats.processing_time}
+                      </span>
                     </div>
                   </div>
                 ) : (
@@ -174,13 +224,11 @@ export const FieldDetectStudio = () => {
             </Card>
           </div>
 
-          {/* Right Side - Video trong lúc đợi */}
           <Card className="p-6 bg-card border-border shadow-card">
             <VideoPlayer isWaiting={isProcessing} />
           </Card>
         </div>
 
-        {/* Status Footer */}
         <Card className="p-4 bg-ai-surface border-border shadow-card">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">

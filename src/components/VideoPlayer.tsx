@@ -16,7 +16,7 @@ export const VideoPlayer = ({ isWaiting, videoUrl }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Default demo video URL - you can replace with your actual video
-  const defaultVideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+  const defaultVideoUrl = "/videos/videoplayback.mp4";
   const currentVideoUrl = videoUrl || defaultVideoUrl;
 
   useEffect(() => {
@@ -89,9 +89,9 @@ export const VideoPlayer = ({ isWaiting, videoUrl }: VideoPlayerProps) => {
             <Play className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Preview Video</h2>
+            <h2 className="text-xl font-semibold text-foreground">Video thư giãn</h2>
             <p className="text-sm text-muted-foreground">
-              {isWaiting ? "Watch while processing..." : "Sample detection video"}
+              {isWaiting ? "Watch while processing..." : "Hãy xem video này trong khi chờ đợi kết quả nhé!!!!! >< ><"}
             </p>
           </div>
         </div>
@@ -102,7 +102,7 @@ export const VideoPlayer = ({ isWaiting, videoUrl }: VideoPlayerProps) => {
         <div className="relative h-full group">
           <video
             ref={videoRef}
-            className="w-full h-full object-cover rounded-lg"
+            className="w-full h-full object-contain rounded-lg bg-black"
             src={currentVideoUrl}
             loop
             muted={volume === 0}
@@ -214,7 +214,7 @@ export const VideoPlayer = ({ isWaiting, videoUrl }: VideoPlayerProps) => {
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-ai-primary rounded-full animate-pulse" />
               <span className="text-sm text-muted-foreground">
-                Model is processing your image. This usually takes 30-60 seconds.
+                Mô hình đang xử lý, hãy đợi trong giây lát...
               </span>
             </div>
             <div className="text-sm text-ai-primary font-medium">

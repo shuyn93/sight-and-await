@@ -1,0 +1,16 @@
+flask
+flask-cors
+numpy
+opencv-python
+pillow
+ultralytics
+torch
+torchvision
+requests
+python-multipart
+uvicorn
+fastapi
+pydantic
+python-dotenv
+matplotlib
+scipy
