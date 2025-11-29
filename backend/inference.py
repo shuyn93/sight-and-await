@@ -23,7 +23,7 @@ color_map = {
     'ball': (0, 0, 255),
 }
 
-def draw_combined_detections(frame, results_pitch, results_players):
+def draw_combined_detections(frame, results_pitch, results_players, kp_threshold=0.5):
     combined_frame = frame.copy()
 
     def draw_boxes(results, frame):
@@ -37,14 +37,25 @@ def draw_combined_detections(frame, results_pitch, results_players):
             cv2.putText(frame, f"{label} {conf:.2f}", (x1, max(y1 - 10, 15)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-    def draw_keypoints(results, frame):
+    # def draw_keypoints(results, frame):
+    #     if hasattr(results, "keypoints") and results.keypoints is not None:
+    #         keypoints_all = results.keypoints.xy[0].cpu().numpy()
+    #         for idx, (x, y) in enumerate(keypoints_all):
+    #             if x > 0 and y > 0:
+    #                 cv2.circle(frame, (int(x), int(y)), 5, (0, 255, 0), -1)
+    #                 cv2.putText(frame, str(idx + 1), (int(x)+6, int(y)-6),
+    #                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+    def draw_keypoints(results, frame, kp_threshold=0.6):
         if hasattr(results, "keypoints") and results.keypoints is not None:
-            keypoints_all = results.keypoints.xy[0].cpu().numpy()
-            for idx, (x, y) in enumerate(keypoints_all):
-                if x > 0 and y > 0:
+            keypoints_xy = results.keypoints.xy[0].cpu().numpy()       # (K, 2)
+            keypoints_conf = results.keypoints.conf[0].cpu().numpy()   # (K,)
+
+            for idx, ((x, y), conf) in enumerate(zip(keypoints_xy, keypoints_conf)):
+                if x > 0 and y > 0 and conf >= kp_threshold:
                     cv2.circle(frame, (int(x), int(y)), 5, (0, 255, 0), -1)
                     cv2.putText(frame, str(idx + 1), (int(x)+6, int(y)-6),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
 
     draw_boxes(results_pitch, combined_frame)
     draw_keypoints(results_pitch, combined_frame)
@@ -103,15 +114,28 @@ def process_image(file_path):
 
     # Thu thập keypoints (từ results_pitch)
     keypoints = []
+    # if hasattr(results_pitch, "keypoints") and results_pitch.keypoints is not None:
+    #     keypoints_all = results_pitch.keypoints.xy[0].cpu().numpy()
+    #     for idx, (x, y) in enumerate(keypoints_all):
+    #         if x > 0 and y > 0:
+    #             keypoints.append({
+    #                 "x": float(x),
+    #                 "y": float(y),
+    #                 "index": idx + 1
+    #             })
     if hasattr(results_pitch, "keypoints") and results_pitch.keypoints is not None:
-        keypoints_all = results_pitch.keypoints.xy[0].cpu().numpy()
-        for idx, (x, y) in enumerate(keypoints_all):
-            if x > 0 and y > 0:
+        keypoints_xy = results_pitch.keypoints.xy[0].cpu().numpy()
+        keypoints_conf = results_pitch.keypoints.conf[0].cpu().numpy()
+
+        for idx, ((x, y), conf) in enumerate(zip(keypoints_xy, keypoints_conf)):
+            if x > 0 and y > 0 and conf >= 0.5:
                 keypoints.append({
                     "x": float(x),
                     "y": float(y),
+                    "confidence": float(conf),
                     "index": idx + 1
                 })
+
 
     return {
         "output_path": str(out_path),
