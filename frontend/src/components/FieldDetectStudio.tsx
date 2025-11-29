@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+// changed imports to relative paths to fix editor/TS red underlines
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import { Upload, Play, Cpu, Sparkles, Camera, Download } from "lucide-react";
 import axios from "axios";
 import { VideoPlayer } from "./VideoPlayer"; // chỉnh path nếu khác
@@ -19,10 +20,18 @@ interface Keypoint {
   index: number;
 }
 
+// added typed Stats interface so counts is known to be numbers
+interface Stats {
+  counts: Record<string, number>;
+  confidence_avg: number;
+  processing_time: number;
+}
+
 export const FieldDetectStudio = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [stats, setStats] = useState<any>(null);
+  // changed stats typing from any to Stats | null
+  const [stats, setStats] = useState<Stats | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const handleUploadImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,8 +70,12 @@ export const FieldDetectStudio = () => {
 
       const { download_url, processing_time, counts, confidence_avg } = response.data;
 
-      // Lưu stats và link tải xuống
-      setStats({ counts, confidence_avg, processing_time });
+      // Lưu stats và link tải xuống — cast counts về Record<string, number>
+      setStats({
+        counts: counts as Record<string, number>,
+        confidence_avg,
+        processing_time,
+      });
       setDownloadUrl(download_url);
 
       // Dùng luôn ảnh xử lý từ backend hiển thị
@@ -185,7 +198,7 @@ export const FieldDetectStudio = () => {
                     <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                       <span className="text-foreground">Tổng số đối tượng:</span>
                       <span className="text-ai-primary font-bold text-xl">
-                        {Object.values(stats.counts).reduce((a: any, b: any) => a + b, 0)}
+                        {Object.values(stats.counts).reduce((a: number, b: number) => a + b, 0)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
