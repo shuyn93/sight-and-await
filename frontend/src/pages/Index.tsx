@@ -1,4 +1,4 @@
-import { FieldDetectStudio } from "@/components/FieldDetectStudio";
+import { FieldDetectStudio } from "../components/FieldDetectStudio";
 
 const Index = () => {
   return <FieldDetectStudio />;
