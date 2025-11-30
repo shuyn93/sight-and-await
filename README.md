@@ -1,73 +1,21 @@
-# Welcome to your Lovable project
+# Thông tin Dự án
 
-## Project info
+**Học phần:** MAT3508 -- Nhập môn Trí tuệ Nhân tạo  
+**Học kỳ:** Học kỳ 1, Năm học 2025-2026  
+**Trường:** VNU-HUS (Đại học Quốc gia Hà Nội -- Trường Đại học Khoa học Tự nhiên)  
+**Tên dự án:** Ước lượng điểm đặc trưng sân bóng đá bằng mô hình YOLO  
+**Ngày nộp:** 30/11/2025  
+**Báo cáo PDF:** [Liên kết tới báo cáo PDF trong kho GitHub](#)  
+**Slide thuyết trình:** [Liên kết tới slide thuyết trình trong kho GitHub](#)  
+**Kho GitHub:** [https://github.com/shuyn93/sight-and-await.git](https://github.com/shuyn93/sight-and-await.git)
 
-**URL**: https://lovable.dev/projects/9bbb6a56-7b40-48a0-8dcc-0e5a2a8f37b6
+---
 
-## How can I edit this code?
+## Thành viên nhóm
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/9bbb6a56-7b40-48a0-8dcc-0e5a2a8f37b6) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/9bbb6a56-7b40-48a0-8dcc-0e5a2a8f37b6) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+| Họ tên | Mã sinh viên | Tên GitHub | Đóng góp |
+|--------|--------------|------------|----------|
+| Nguyễn Thị Thu Phương | 22001729 | shuyn93 | Nhóm trưởng: Phân chia công việc, phụ trách tổng quan và dữ liệu mô hình, tìm hiểu lí thuyết mô hình YOLOv8x-pose, kiểm tra chất lượng công việc thành viên, hỗ trợ viết mã, sửa mã lập trình, đưa ra hướng cải thiện mô hình |
+| Phạm Thị Hồng Duyên | 23001511 | 23001511-sudo | Phụ trách mô hình YOLOv8x-pose, chiến lược huấn luyện |
+| Khổng Minh Châu | 23001503 | Chau23001503 | Phụ trách đánh giá, so sánh các phiên bản mô hình; phát triển các phương pháp dự đoán và tối ưu hóa mô hình, thực nghiệm so sánh và kết quả |
+| Nguyễn Ngọc Huyền | 23001527 | kidokyubi | Phụ trách triển khai ứng dụng; hỗ trợ tìm hiểu lí thuyết các phương pháp dự đoán, thực nghiệm, so sánh kết quả |
