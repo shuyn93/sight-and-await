@@ -5,8 +5,8 @@
 **Trường:** VNU-HUS (Đại học Quốc gia Hà Nội -- Trường Đại học Khoa học Tự nhiên)  
 **Tên dự án:** Ước lượng điểm đặc trưng sân bóng đá bằng mô hình YOLO  
 **Ngày nộp:** 30/11/2025  
-**Báo cáo PDF:** [Liên kết tới báo cáo PDF trong kho GitHub](#)  
-**Slide thuyết trình:** [Liên kết tới slide thuyết trình trong kho GitHub](#)  
+**Báo cáo PDF:** [Liên kết tới báo cáo PDF trong kho GitHub](https://github.com/shuyn93/sight-and-await/blob/main/report/B%C3%A1o_c%C3%A1o_cu%E1%BB%91i_k%C3%AC_H%E1%BB%8Dc_ph%E1%BA%A7n_AI%20-Nh%C3%B3m8.pdf)  
+**Slide thuyết trình:** [Liên kết tới slide thuyết trình trong kho GitHub](https://github.com/shuyn93/sight-and-await/blob/main/slide/Nh%C3%B3m%208.pdf)  
 **Kho GitHub:** [https://github.com/shuyn93/sight-and-await.git](https://github.com/shuyn93/sight-and-await.git)
 
 ---
