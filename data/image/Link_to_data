@@ -1,0 +1,22 @@
+* Tải về dữ liệu tại link:
+https://drive.google.com/file/d/1av1IXZ9pY0iizJtWGH7FpZg1dTdOw0JO/view?usp=drive_link
+
+* Thư mục sau khi giải nén sẽ có cấu trúc như sau:
+
+ARCHIVE (1)
+    dataset/YOLO_Datasets/merged
+        images/
+            train/
+                xxx.jpg / xxx.png
+            val/
+                xxx.jpg / xxx.png
+            test/
+                xxx.jpg / xxx.png
+        labels/
+            train/
+                xxx.txt
+            val/
+                xxx.txt
+            test/
+                xxx.txt
+        data.yaml
